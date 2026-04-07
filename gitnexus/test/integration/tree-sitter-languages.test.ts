@@ -666,6 +666,50 @@ describe('Tree-sitter multi-language parsing', () => {
     });
   });
 
+  describe('Lua', () => {
+    it('parses function definitions', async () => {
+      await loadLanguage(SupportedLanguages.Lua);
+      const content = readFixture('simple.lua');
+      const provider = getProvider(SupportedLanguages.Lua);
+      const { matches } = parseAndQuery(parser, content, provider.treeSitterQueries);
+      const defs = extractDefinitions(matches);
+
+      expect(defs.length).toBeGreaterThan(0);
+      const names = defs.map((d) => d.name);
+      expect(names).toContain('greet');
+      expect(names).toContain('helper');
+    });
+
+    it('recognizes Animal as a class and its methods', async () => {
+      await loadLanguage(SupportedLanguages.Lua);
+      const content = readFixture('simple.lua');
+      const provider = getProvider(SupportedLanguages.Lua);
+      const { matches } = parseAndQuery(parser, content, provider.treeSitterQueries);
+      const defs = extractDefinitions(matches);
+
+      const classDefs = defs.filter((d) => d.type === 'definition.class');
+      const methodDefs = defs.filter((d) => d.type === 'definition.method');
+      expect(classDefs.map((d) => d.name)).toContain('Animal');
+      expect(methodDefs.map((d) => d.name)).toContain('speak');
+      expect(methodDefs.map((d) => d.name)).toContain('new');
+    });
+
+    it('detects require() imports', async () => {
+      await loadLanguage(SupportedLanguages.Lua);
+      const content = readFixture('simple.lua');
+      const provider = getProvider(SupportedLanguages.Lua);
+      const { matches } = parseAndQuery(parser, content, provider.treeSitterQueries);
+
+      const imports = matches
+        .flatMap((m) => m.captures)
+        .filter((c) => c.name === 'import.source')
+        .map((c) => c.node.text.replace(/^['"]|['"]$/g, ''));
+
+      expect(imports).toContain('lib.utils');
+      expect(imports).toContain('dkjson');
+    });
+  });
+
   describe('parser edge cases', () => {
     it('loadLanguage throws for unsupported language', async () => {
       await expect(loadLanguage('brainfuck' as any)).rejects.toThrow(/unsupported language/i);
