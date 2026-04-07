@@ -246,3 +246,8 @@ export const rubyExportChecker: ExportChecker = (_node, _name) => true;
 
 /** Dart: public if no leading underscore (convention, same as Python). */
 export const dartExportChecker: ExportChecker = (_node, name) => !name.startsWith('_');
+
+/** Lua: public if not prefixed with underscore (convention). Local-scoped symbols
+ *  are handled at the query level (only globals match @definition.*), so name-based
+ *  convention is the only signal available here. */
+export const luaExportChecker: ExportChecker = (_node, name) => !name.startsWith('_');

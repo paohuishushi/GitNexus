@@ -930,7 +930,7 @@ describe('parsing', () => {
       expect(scalaLang).toBeNull();
 
       const luaLang = getLanguageFromFilename('module.lua');
-      expect(luaLang).toBeNull();
+      expect(luaLang).toBe(SupportedLanguages.Lua);
 
       // loadLanguage throws an explicit error for a language not in the grammar map.
       // Cast through unknown to simulate a caller passing an unrecognised language key.

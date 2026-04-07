@@ -1332,6 +1332,49 @@ export const DART_QUERIES = `
       (type_identifier) @heritage.trait))) @heritage
 `;
 
+export const LUA_QUERIES = `
+; ── Functions ──────────────────────────────────────────────────────────────
+; function greet(name) ... end  (global and local)
+(function_declaration
+  name: (identifier) @name) @definition.function
+
+; ── OOP: Class detection ────────────────────────────────────────────────────
+; Animal = {}  →  class candidate
+(assignment_statement
+  (variable_list (identifier) @name)
+  (expression_list (table_constructor))) @definition.class
+
+; ── OOP: Method detection ───────────────────────────────────────────────────
+; function Animal:speak() ... end  (colon method)
+(function_declaration
+  name: (method_index_expression
+    table: (identifier) @class.ref
+    method: (identifier) @name)) @definition.method
+
+; function Animal.staticMethod() ... end  (dot method)
+(function_declaration
+  name: (dot_index_expression
+    table: (identifier) @class.ref
+    field: (identifier) @name)) @definition.method
+
+; ── require() imports ───────────────────────────────────────────────────────
+(function_call
+  name: (identifier) @_req (#eq? @_req "require")
+  arguments: (arguments (string) @import.source)) @import
+
+; ── Function calls ──────────────────────────────────────────────────────────
+(function_call
+  name: (identifier) @call.name) @call
+
+(function_call
+  name: (method_index_expression
+    method: (identifier) @call.name)) @call
+
+(function_call
+  name: (dot_index_expression
+    field: (identifier) @call.name)) @call
+`;
+
 import { SupportedLanguages } from 'gitnexus-shared';
 
 export const LANGUAGE_QUERIES: Record<SupportedLanguages, string> = {
@@ -1351,4 +1394,5 @@ export const LANGUAGE_QUERIES: Record<SupportedLanguages, string> = {
   [SupportedLanguages.Dart]: DART_QUERIES,
   [SupportedLanguages.Vue]: TYPESCRIPT_QUERIES, // Vue <script> blocks are parsed as TypeScript
   [SupportedLanguages.Cobol]: '', // Standalone regex processor — no tree-sitter queries
+  [SupportedLanguages.Lua]: LUA_QUERIES,
 };
