@@ -22,4 +22,6 @@ export enum SupportedLanguages {
   Vue = 'vue',
   /** Standalone regex processor — no tree-sitter, no LanguageProvider. */
   Cobol = 'cobol',
+  /** Standard Lua 5.x */
+  Lua = 'lua',
 }
