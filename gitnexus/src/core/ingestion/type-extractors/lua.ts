@@ -9,8 +9,8 @@ import type { LanguageTypeConfig, ParameterExtractor, TypeBindingExtractor } fro
 
 /** Node types that may carry a variable binding in Lua. */
 const DECLARATION_NODE_TYPES: ReadonlySet<string> = new Set([
-  'local_variable_declaration',
-  'variable_assignment',
+  'variable_declaration',
+  'assignment_statement',
 ]);
 
 /**
