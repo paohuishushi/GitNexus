@@ -1276,6 +1276,24 @@ export const LUA_QUERIES = `
     table: (identifier) @class.ref
     field: (identifier) @name)) @definition.method
 
+; ── Anonymous function assignments ──────────────────────────────────────────
+; local helper = function(x) ... end
+(variable_declaration
+  (assignment_statement
+    (variable_list (identifier) @name)
+    (expression_list (function_definition)))) @definition.function
+
+; greet = function(name) ... end
+(assignment_statement
+  (variable_list (identifier) @name)
+  (expression_list (function_definition))) @definition.function
+
+; M.method = function(self) ... end
+(assignment_statement
+  (variable_list (dot_index_expression
+    field: (identifier) @name))
+  (expression_list (function_definition))) @definition.method
+
 ; ── require() imports ───────────────────────────────────────────────────────
 (function_call
   name: (identifier) @_req (#eq? @_req "require")
