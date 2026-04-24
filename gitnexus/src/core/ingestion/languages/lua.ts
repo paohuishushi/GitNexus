@@ -4,7 +4,7 @@
  * Assembles Lua-specific ingestion capabilities following the Strategy pattern.
  *
  * Key Lua traits:
- *   - importSemantics: 'wildcard' (require() returns the entire module)
+ *   - importSemantics: 'wildcard-leaf' (require() returns the entire module as a value)
  *   - OOP via metatables: class/method nodes detected via tree-sitter queries
  */
 import { SupportedLanguages } from 'gitnexus-shared';
@@ -21,5 +21,5 @@ export const luaProvider = defineLanguage({
   typeConfig: luaTypeConfig,
   exportChecker: luaExportChecker,
   importResolver: resolveLuaImport,
-  importSemantics: 'wildcard',
+  importSemantics: 'wildcard-leaf',
 });
